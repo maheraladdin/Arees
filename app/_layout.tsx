@@ -1,10 +1,29 @@
+import { useEffect } from 'react';
 import { useFonts } from 'expo-font';
+import {Pressable} from "react-native";
 import {Stack, useRouter} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import {Pressable} from "react-native";
 import {Ionicons, MaterialIcons} from "@expo/vector-icons";
+import {ClerkProvider, useAuth} from "@clerk/clerk-expo";
+import * as SecureStore from "expo-secure-store";
 
+const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+const tokenCache = {
+    async getToken(key: string) {
+        try {
+            return SecureStore.getItemAsync(key);
+        } catch (err) {
+            return null;
+        }
+    },
+    async saveToken(key: string, value: string) {
+        try {
+            return SecureStore.setItemAsync(key, value);
+        } catch (err) {
+            return;
+        }
+    },
+};
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -41,44 +60,60 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+      <ClerkProvider
+          tokenCache={tokenCache}
+          publishableKey={CLERK_PUBLISHABLE_KEY!}
+      >
+        <RootLayoutNav />
+      </ClerkProvider>
+  );
 }
 
 function RootLayoutNav() {
   const router = useRouter();
+  const {isLoaded, isSignedIn} = useAuth();
+
+    useEffect(() => {
+        if (isLoaded && !isSignedIn) {
+            router.push("/login");
+        }
+    }, [isLoaded]);
+
   return (
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-            name="(modals)/login"
-            options={{
-              presentation: "modal",
-              title: "Login",
-              headerTitleStyle: {
-              fontFamily: "mon-sb",
-              },
-              headerLeft: () => (<Pressable onPress={() => {router.back()}} ><Ionicons name={"close-outline"} size={28} /></Pressable>),
-            }}
-        />
-        <Stack.Screen
-            name="(modals)/booking"
-            options={{
-              presentation: "transparentModal",
-              animation: "fade",
-              title: "Booking",
-              headerTitleStyle: {
-                fontFamily: "mon-sb",
-              },
-              headerLeft: () => (<Pressable onPress={() => {router.back()}} ><Ionicons name={"close-outline"} size={28} /></Pressable>),
-            }}
-        />
-        <Stack.Screen
-            name="listing/[id]"
-            options={{
-              title: "",
-              headerLeft: () => (<Pressable onPress={() => {router.back()}} ><MaterialIcons name={"arrow-back-ios"} size={28} /></Pressable>)
-            }}
-        />
-      </Stack>
+
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+                name="(modals)/login"
+                options={{
+                  presentation: "modal",
+                  title: "Login",
+                  headerTitleStyle: {
+                  fontFamily: "mon-sb",
+                  },
+                  headerLeft: () => (<Pressable onPress={() => {router.back()}} ><Ionicons name={"close-outline"} size={28} /></Pressable>),
+                }}
+            />
+            <Stack.Screen
+                name="(modals)/booking"
+                options={{
+                  presentation: "transparentModal",
+                  animation: "fade",
+                  title: "Booking",
+                  headerTitleStyle: {
+                    fontFamily: "mon-sb",
+                  },
+                  headerLeft: () => (<Pressable onPress={() => {router.back()}} ><Ionicons name={"close-outline"} size={28} /></Pressable>),
+                }}
+            />
+            <Stack.Screen
+                name="listing/[id]"
+                options={{
+                  title: "",
+                  headerLeft: () => (<Pressable onPress={() => {router.back()}} ><MaterialIcons name={"arrow-back-ios"} size={28} /></Pressable>)
+                }}
+            />
+          </Stack>
   );
 }
