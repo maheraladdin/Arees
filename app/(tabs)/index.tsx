@@ -8,7 +8,7 @@ export default function ExplorePage() {
             alignItems: "center"
         }}>
             <Link style={{paddingBottom: 100}} href={"/booking"}>Booking</Link>
-            <Link style={{paddingBottom: 100}} href={"/login"}>Login</Link>
+            <Link style={{paddingBottom: 100}} href={"/auth"}>Login</Link>
             <Link href={"/listing/123"}>listing</Link>
         </View>
     )

@@ -1,13 +1,15 @@
 import {useOAuth} from "@clerk/clerk-expo";
 import {Ionicons} from "@expo/vector-icons";
 import * as WebBrowser from "expo-web-browser";
-import {View, Text, StyleSheet, TextInput, Pressable, ScrollView} from "react-native";
+import {View, Text, StyleSheet, Pressable, ScrollView} from "react-native";
 
 import Colors from "@/constants/Colors";
 import {defaultStyles} from "@/constants/Styles";
 import {useWarmUpBrowser} from "@/hooks/useWarmUpBrowser";
 import {useRouter} from "expo-router";
-import {useCallback} from "react";
+import {useCallback, useState} from "react";
+import {SignIn} from "@/components/SignIn";
+import {SignUp} from "@/components/SignUp";
 
 enum OAuthStrategies {
     Google = "oauth_google",
@@ -17,10 +19,11 @@ enum OAuthStrategies {
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function LoginModel() {
+export default function AuthModal() {
     useWarmUpBrowser();
 
     const router = useRouter();
+    const [isSignUp, setIsSignUp] = useState<boolean>(false);
     const {startOAuthFlow: googleAuth} = useOAuth({strategy: OAuthStrategies.Google});
     const {startOAuthFlow: facebookAuth} = useOAuth({strategy: OAuthStrategies.Facebook});
     const {startOAuthFlow: appleAuth} = useOAuth({strategy: OAuthStrategies.Apple});
@@ -45,10 +48,25 @@ export default function LoginModel() {
 
     return (
         <ScrollView style={styles.container}>
-            <TextInput style={[defaultStyles.inputField, {marginBottom: 30}]} placeholder="your_email@host.extenstion" placeholderTextColor={"#EEE"} autoCapitalize={"none"} />
-            <Pressable style={defaultStyles.btn}>
-                <Text style={defaultStyles.btnText}>Continue</Text>
-            </Pressable>
+            {!isSignUp ? <SignIn /> : <SignUp />}
+            <View
+                style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginTop: 20,
+                    gap: 5,
+                }}
+            >
+                <Text>Don't have Account?</Text>
+                <Pressable onPress={() => setIsSignUp(prevState => !prevState)}>
+                    <Text style={{
+                        textDecorationLine: "underline",
+                        color: Colors.primary,
+                    }}>
+                        {!isSignUp ? "Sign Up" : "Sign in"}
+                    </Text>
+                </Pressable>
+            </View>
             <View style={styles.separatorView}>
                 <View style={{
                     borderBlockColor: "#000",

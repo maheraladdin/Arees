@@ -76,7 +76,7 @@ function RootLayoutNav() {
 
     useEffect(() => {
         if (isLoaded && !isSignedIn) {
-            router.push("/login");
+            router.push("/auth");
         }
     }, [isLoaded]);
 
@@ -85,7 +85,7 @@ function RootLayoutNav() {
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen
-                name="(modals)/login"
+                name="(modals)/auth"
                 options={{
                   presentation: "modal",
                   title: "Login",
