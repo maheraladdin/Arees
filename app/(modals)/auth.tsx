@@ -8,8 +8,7 @@ import {defaultStyles} from "@/constants/Styles";
 import {useWarmUpBrowser} from "@/hooks/useWarmUpBrowser";
 import {useRouter} from "expo-router";
 import {useCallback, useState} from "react";
-import {SignIn} from "@/components/SignIn";
-import {SignUp} from "@/components/SignUp";
+import {SignIn, SignUp} from "@/components/auth-model";
 
 enum OAuthStrategies {
     Google = "oauth_google",
@@ -57,7 +56,7 @@ export default function AuthModal() {
                     gap: 5,
                 }}
             >
-                <Text>Don't have Account?</Text>
+                <Text>{!isSignUp ? "Don't have account? " : "Do you have an account? " }</Text>
                 <Pressable onPress={() => setIsSignUp(prevState => !prevState)}>
                     <Text style={{
                         textDecorationLine: "underline",
@@ -83,12 +82,6 @@ export default function AuthModal() {
             <View style={{
                 gap: 20
             }}>
-                <Pressable style={styles.btnOutline} >
-                    <Ionicons name={"call-outline"} size={24} color={Colors.grey} style={defaultStyles.btnIcon} />
-                    <Text style={styles.btnOutlineText}>
-                        Continue with phone
-                    </Text>
-                </Pressable>
                 <Pressable style={styles.btnOutline} onPress={() => onSelectAuth(OAuthStrategies.Apple)}>
                     <Ionicons name={"logo-apple"} size={24} color={Colors.grey} style={defaultStyles.btnIcon} />
                     <Text style={styles.btnOutlineText}>

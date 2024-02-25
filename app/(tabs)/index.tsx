@@ -1,15 +1,31 @@
 import {View} from "react-native";
-import {Link} from "expo-router";
+import {Stack, useGlobalSearchParams} from "expo-router";
+import {ExploreHeader, Listing} from "@/components/explore-page";
+import {useEffect, useMemo} from "react";
+import ListingData from "@/assets/data/airbnb-listings.geo.json";
+
 export default function ExplorePage() {
+
+    const params = useGlobalSearchParams();
+    const items = useMemo(() => ListingData, []);
+
+    useEffect(() => {
+        console.log(params.search);
+    }, [params.search]);
+
+    useEffect(() => {
+        console.log(params.category);
+    }, [params.category]);
+
     return (
         <View style={{
             flex: 1,
-            justifyContent: "center",
-            alignItems: "center"
+            marginTop: 130,
         }}>
-            <Link style={{paddingBottom: 100}} href={"/booking"}>Booking</Link>
-            <Link style={{paddingBottom: 100}} href={"/auth"}>Login</Link>
-            <Link href={"/listing/123"}>listing</Link>
+            <Stack.Screen options={{
+                header: () => <ExploreHeader />,
+            }} />
+            <Listing listing={items} category={params.category as string} />
         </View>
     )
 }

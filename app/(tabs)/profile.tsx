@@ -10,7 +10,7 @@ export default function ProfilePage() {
                 <Text>signOut</Text>
             </Pressable>
             ) : (
-                <Link href={"/login"}>
+                <Link href={"/auth"}>
                     <Text> signIn </Text>
                 </Link>
             )}
