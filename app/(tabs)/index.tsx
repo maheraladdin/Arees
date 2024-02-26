@@ -2,12 +2,14 @@ import {View} from "react-native";
 import {Stack, useGlobalSearchParams} from "expo-router";
 import {ExploreHeader, Listing} from "@/components/explore-page";
 import {useEffect, useMemo} from "react";
-import ListingData from "@/assets/data/airbnb-listings.geo.json";
+import listing from "@/assets/data/airbnb-listings.json";
+import {Root} from "@/types/listing";
+
 
 export default function ExplorePage() {
 
     const params = useGlobalSearchParams();
-    const items = useMemo(() => ListingData, []);
+    const items = useMemo(() => listing as Root[], []);
 
     useEffect(() => {
         console.log(params.search);
@@ -25,7 +27,7 @@ export default function ExplorePage() {
             <Stack.Screen options={{
                 header: () => <ExploreHeader />,
             }} />
-            <Listing listing={items} category={params.category as string} />
+            <Listing items={items} category={params.category as string} />
         </View>
     )
 }
