@@ -14,7 +14,7 @@ type ListingProps = {
     category: string;
 }
 
-const renderRow = ({item, index}: {item: Root, index: number}) => {
+const renderRow = ({item}: {item: Root, index: number}) => {
     return (item.review_scores_rating / item.number_of_reviews <= 10 && !!item.medium_url) ? (
         <Link href={`/listing/${item.id}`} asChild>
             <Pressable>
@@ -46,23 +46,24 @@ const renderRow = ({item, index}: {item: Root, index: number}) => {
 }
 
 export default function Listing({items, category}: ListingProps) {
-    const [isLoading, setIsLoading] = useState(false);
+    // const [isLoading, setIsLoading] = useState(false);
     const FlatListRef = useRef<FlashList<any> | null>(null);
     const [data, setData] = useState<Root[]>(items);
 
     useEffect(() => {
-        setIsLoading(true);
+        // setIsLoading(true);
         setData([]);
         setTimeout(() => {
             setData(items);
-        }, 1000);
+        }, 100);
 
-        setIsLoading(false);
+        // setIsLoading(false);
     }, [category]);
 
     return (
         <View style={defaultStyles.container} >
             <FlashList
+                estimatedItemSize={399}
                 ref={FlatListRef}
                 data={data}
                 renderItem={renderRow}
