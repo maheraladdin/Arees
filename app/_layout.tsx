@@ -3,7 +3,7 @@ import { useFonts } from 'expo-font';
 import {Pressable} from "react-native";
 import {Stack, useRouter} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import {Ionicons, MaterialIcons} from "@expo/vector-icons";
+import {Ionicons} from "@expo/vector-icons";
 import {ClerkProvider, useAuth} from "@clerk/clerk-expo";
 import * as SecureStore from "expo-secure-store";
 
@@ -110,8 +110,8 @@ function RootLayoutNav() {
             <Stack.Screen
                 name="listing/[id]"
                 options={{
-                  title: "",
-                  headerLeft: () => (<Pressable onPress={() => {router.back()}} ><MaterialIcons name={"arrow-back-ios"} size={28} /></Pressable>)
+                    headerTitle: "",
+                    headerTransparent: true,
                 }}
             />
           </Stack>

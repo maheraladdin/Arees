@@ -1,9 +1,10 @@
-import { useLocalSearchParams, useNavigation } from 'expo-router';
-import React, { useLayoutEffect } from 'react';
-import {View, Text, StyleSheet, Image, Dimensions, Share, Pressable} from 'react-native';
-import listingsData from '@/assets/data/airbnb-listings.json';
-import { Ionicons } from '@expo/vector-icons';
+import {Image} from "expo-image";
 import Colors from '@/constants/Colors';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useLayoutEffect } from 'react';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
+import {View, Text, StyleSheet, Dimensions, Share, Pressable} from 'react-native';
+
 import Animated, {
     SlideInDown,
     interpolate,
@@ -11,6 +12,8 @@ import Animated, {
     useAnimatedStyle,
     useScrollViewOffset,
 } from 'react-native-reanimated';
+
+import listingsData from '@/assets/data/airbnb-listings.json';
 import { defaultStyles } from '@/constants/Styles';
 import {Root} from "@/types/listing";
 
@@ -83,7 +86,7 @@ export default function ListingIdPage() {
 
     const headerAnimatedStyle = useAnimatedStyle(() => {
         return {
-            opacity: interpolate(scrollOffset.value, [0, IMG_HEIGHT / 1.5], [0, 1]),
+            opacity: interpolate(scrollOffset.value, [0, IMG_HEIGHT / 1.5], [0 , 1]),
         };
     }, []);
 
@@ -229,7 +232,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderColor: Colors.grey,
     },
-
     description: {
         fontSize: 16,
         marginTop: 10,
