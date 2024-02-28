@@ -1,8 +1,9 @@
 import {View} from "react-native";
 import {Stack, useGlobalSearchParams} from "expo-router";
-import {ExploreHeader, Listing} from "@/components/explore-page";
+import {ExploreHeader, Listing, ExploreMap} from "@/components/explore-page";
 import {useEffect, useMemo} from "react";
 import listing from "@/assets/data/airbnb-listings.json";
+import listingGeo from "@/assets/data/airbnb-listings.geo.json";
 import {Root} from "@/types/listing";
 
 
@@ -27,7 +28,8 @@ export default function ExplorePage() {
             <Stack.Screen options={{
                 header: () => <ExploreHeader />,
             }} />
-            <Listing items={items} category={params.category as string} />
+            {/*<Listing items={items} category={params.category as string} />*/}
+            <ExploreMap listings={listingGeo} />
         </View>
     )
 }
