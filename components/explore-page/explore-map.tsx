@@ -1,15 +1,16 @@
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import React, { memo, useEffect, useRef } from 'react';
 import { defaultStyles } from '@/constants/Styles';
-import { Marker } from 'react-native-maps';
+import {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapView from 'react-native-map-clustering';
-import { useRouter } from 'expo-router';
+import {useRouter} from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import * as Location from 'expo-location';
+import { Root } from "@/types/listingGeo";
 
-interface Props {
-    listings: any;
+type ExploreMapProps = {
+    listings: Root;
 }
 
 const INITIAL_REGION = {
@@ -19,7 +20,7 @@ const INITIAL_REGION = {
     longitudeDelta: 9,
 };
 
-const ExploreMap = memo(({ listings }: Props) => {
+const ExploreMap = memo(({ listings }: ExploreMapProps) => {
     const router = useRouter();
     const mapRef = useRef<any>(null);
 
@@ -27,11 +28,6 @@ const ExploreMap = memo(({ listings }: Props) => {
     useEffect(() => {
         (async () => await onLocateMe())();
     }, []);
-
-    // When a marker is selected, navigate to the listing page
-    const onMarkerSelected = (event: any) => {
-        router.push(`/listing/${event.properties.id}`);
-    };
 
     // Focus the map on the user's location
     const onLocateMe = async () => {
@@ -89,25 +85,30 @@ const ExploreMap = memo(({ listings }: Props) => {
                 clusterColor="#fff"
                 clusterTextColor="#000"
                 clusterFontFamily="mon-sb"
-                renderCluster={renderCluster}>
+                renderCluster={renderCluster}
+                showsUserLocation
+                showsMyLocationButton
+                provider={PROVIDER_GOOGLE}
+            >
                 {/* Render all our marker as usual */}
-                {listings.features.map((item: any) => (
-                    <Marker
-                        coordinate={{
-                            latitude: item.properties.latitude,
-                            longitude: item.properties.longitude,
-                        }}
-                        key={item.properties.id}
-                        onPress={() => onMarkerSelected(item)}>
-                        <View style={styles.marker}>
-                            <Text style={styles.markerText}>€ {item.properties.price}</Text>
-                        </View>
-                    </Marker>
+                {listings.features.map((item) => (
+                        <Marker
+                            coordinate={{
+                                latitude:  +item.properties.latitude,
+                                longitude:  +item.properties.longitude,
+                            }}
+                            key={item.properties.id}
+                            onPress={(event) => {
+                                event.preventDefault();
+                                router.push(`/listing/${item.properties.id}`);
+                            }}
+                            >
+                                <View style={styles.marker}>
+                                    <Text style={styles.markerText}>€ {item.properties.price}</Text>
+                                </View>
+                        </Marker>
                 ))}
             </MapView>
-            <TouchableOpacity style={styles.locateBtn} onPress={async () => await onLocateMe}>
-                <Ionicons name="navigate" size={24} color={Colors.dark} />
-            </TouchableOpacity>
         </View>
     );
 });

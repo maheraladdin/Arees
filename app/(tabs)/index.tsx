@@ -5,6 +5,7 @@ import {useEffect, useMemo} from "react";
 import listing from "@/assets/data/airbnb-listings.json";
 import listingGeo from "@/assets/data/airbnb-listings.geo.json";
 import {Root} from "@/types/listing";
+import {Root as RootGeo} from "@/types/listingGeo";
 
 
 export default function ExplorePage() {
@@ -29,7 +30,7 @@ export default function ExplorePage() {
                 header: () => <ExploreHeader />,
             }} />
             {/*<Listing items={items} category={params.category as string} />*/}
-            <ExploreMap listings={listingGeo} />
+            {/*<ExploreMap listings={listingGeo as RootGeo} />*/}
         </View>
     )
 }
