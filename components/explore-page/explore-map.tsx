@@ -1,12 +1,62 @@
 import { View, StyleSheet, Text } from 'react-native';
 import { defaultStyles } from '@/constants/Styles';
-import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView from "rs-react-native-map-clustering";
 import {useRouter} from 'expo-router';
 import { Root } from "@/types/listingGeo";
 
 type ExploreMapProps = {
     listings: Root;
 }
+
+const INITIAL_REGION = {
+    latitude: 52.5,
+    longitude: 19.2,
+    latitudeDelta: 8.5,
+    longitudeDelta: 8.5,
+};
+
+type clusterProps = {
+    id: string;
+    geometry: {
+        coordinates: [longitude: number, latitude: number];
+    };
+    onPress: () => void;
+    properties: {
+        point_count: number;
+    };
+}
+
+const renderCluster = (cluster: clusterProps) => {
+
+    const {
+        id,
+        geometry: {coordinates: [longitude, latitude]},
+        onPress,
+        properties: {point_count: points}
+    } = cluster;
+
+    return (
+        <Marker
+            key={`cluster-${id}`}
+            coordinate={{
+                longitude,
+                latitude
+            }}
+            onPress={onPress}>
+            <View style={styles.marker}>
+                <Text
+                    style={{
+                        color: '#000',
+                        textAlign: 'center',
+                        fontFamily: 'mon-sb',
+                    }}>
+                    {points}
+                </Text>
+            </View>
+        </Marker>
+    );
+};
 
 const ExploreMap = ({ listings }: ExploreMapProps) => {
     const router = useRouter();
@@ -22,6 +72,8 @@ const ExploreMap = ({ listings }: ExploreMapProps) => {
                 showsUserLocation
                 showsMyLocationButton
                 provider={PROVIDER_GOOGLE}
+                initialRegion={INITIAL_REGION}
+                renderCluster={renderCluster}
             >
                 {/* Render all our marker as usual */}
                 {listings.features.map((item) => (
@@ -32,10 +84,10 @@ const ExploreMap = ({ listings }: ExploreMapProps) => {
                             }}
                             key={item.properties.id}
                             onPress={onMarkerPress.bind(null, item.properties.id)}
-                            >
-                                <View style={styles.marker}>
-                                    <Text style={styles.markerText}>€ {item.properties.price}</Text>
-                                </View>
+                        >
+                            <View style={styles.marker}>
+                                <Text style={styles.markerText}>€ {item.properties.price}</Text>
+                            </View>
                         </Marker>
                 ))}
             </MapView>
