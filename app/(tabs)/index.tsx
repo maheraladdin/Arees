@@ -30,7 +30,7 @@ export default function ExplorePage() {
                 header: () => <ExploreHeader />,
             }} />
             {/*<Listing items={items} category={params.category as string} />*/}
-            {/*<ExploreMap listings={listingGeo as RootGeo} />*/}
+            <ExploreMap listings={listingGeo as RootGeo} />
         </View>
     )
 }
