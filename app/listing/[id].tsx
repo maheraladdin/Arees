@@ -1,7 +1,7 @@
 import {Image} from "expo-image";
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useLayoutEffect } from 'react';
+import React, {useLayoutEffect, useState} from 'react';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import {View, Text, StyleSheet, Dimensions, Share, Pressable} from 'react-native';
 
@@ -13,31 +13,49 @@ import Animated, {
     useScrollViewOffset,
 } from 'react-native-reanimated';
 
-import listingsData from '@/assets/data/airbnb-listings.json';
 import { defaultStyles } from '@/constants/Styles';
-import {Root} from "@/types/listing";
+import {Room} from "@prisma/client";
 
 const { width } = Dimensions.get('window');
 const IMG_HEIGHT = 300;
 
 export default function ListingIdPage() {
     const { id } = useLocalSearchParams<{id: string}>();
-    const listing = (listingsData as Root[]).find((item) => item.id === id);
+    const [room, setRoom] = useState<Room>({
+        id: '',
+        name: '',
+        description: '',
+        room_type: '',
+        price: 0,
+        number_of_reviews: 0,
+        review_scores_rating: 0,
+        xl_picture_url: '',
+        medium_url: '',
+        host_name: '',
+        host_picture_url: '',
+        host_since: '',
+        smart_location: '',
+        guests_included: 0,
+        bedrooms: 0,
+        beds: 0,
+        bathrooms: 0,
+        listing_url: '',
+        latitude: '',
+        longitude: '',
+    });
     const navigation = useNavigation();
     const scrollRef = useAnimatedRef<Animated.ScrollView>();
-
-    if(!listing) return navigation.goBack();
 
     const shareListing = async () => {
         try {
             await Share.share({
-                title: listing.name,
-                url: listing.listing_url,
+                title: room.name!,
+                url: room.listing_url!,
             });
         } catch (err) {
             console.log(err);
         }
-    };
+    }
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -64,6 +82,13 @@ export default function ListingIdPage() {
             ),
         });
     }, []);
+
+    useLayoutEffect(() => {
+        (async () => {
+            const res = await fetch(`/api/room/${id}`)
+            setRoom(await res.json())
+        })()
+    }, [id]);
 
     const scrollOffset = useScrollViewOffset(scrollRef);
 
@@ -97,40 +122,40 @@ export default function ListingIdPage() {
                 ref={scrollRef}
                 scrollEventThrottle={16}>
                 <Animated.Image
-                    source={{ uri: listing.xl_picture_url }}
+                    source={{ uri: room?.xl_picture_url as string }}
                     style={[styles.image, imageAnimatedStyle]}
                     resizeMode="cover"
                 />
 
                 <View style={styles.infoContainer}>
-                    <Text style={styles.name}>{listing.name}</Text>
+                    <Text style={styles.name}>{room?.name}</Text>
                     <Text style={styles.location}>
-                        {listing.room_type} in {listing.smart_location}
+                        {room?.room_type} in {room?.smart_location}
                     </Text>
                     <Text style={styles.rooms}>
-                        {listing.guests_included} guests · {listing.bedrooms} bedrooms · {listing.beds} bed ·{' '}
-                        {listing.bathrooms} bathrooms
+                        {room?.guests_included} guests · {room?.bedrooms} bedrooms · {room?.beds} bed ·{' '}
+                        {room?.bathrooms} bathrooms
                     </Text>
                     <View style={{ flexDirection: 'row', gap: 4 }}>
                         <Ionicons name="star" size={16} />
                         <Text style={styles.ratings}>
-                            {listing.review_scores_rating / 20} · {listing.number_of_reviews} reviews
+                            {!!room?.review_scores_rating && room?.review_scores_rating / 20} · {room?.number_of_reviews} reviews
                         </Text>
                     </View>
                     <View style={styles.divider} />
 
                     <View style={styles.hostView}>
-                        <Image source={{ uri: listing.host_picture_url }} style={styles.host} />
+                        <Image source={{ uri: room?.host_picture_url as string }} style={styles.host} />
 
                         <View>
-                            <Text style={{ fontWeight: '500', fontSize: 16 }}>Hosted by {listing.host_name}</Text>
-                            <Text>Host since {listing.host_since}</Text>
+                            <Text style={{ fontWeight: '500', fontSize: 16 }}>Hosted by {room?.host_name}</Text>
+                            <Text>Host since {room?.host_since}</Text>
                         </View>
                     </View>
 
                     <View style={styles.divider} />
 
-                    <Text style={styles.description}>{listing.description}</Text>
+                    <Text style={styles.description}>{room?.description}</Text>
                 </View>
             </Animated.ScrollView>
 
@@ -138,7 +163,7 @@ export default function ListingIdPage() {
                 <View
                     style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Pressable style={styles.footerText}>
-                        <Text style={styles.footerPrice}>€{listing.price}</Text>
+                        <Text style={styles.footerPrice}>€{room?.price}</Text>
                         <Text>night</Text>
                     </Pressable>
 

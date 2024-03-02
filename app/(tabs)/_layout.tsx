@@ -18,10 +18,6 @@ export default function TabsLayout() {
                 tabBarLabel: "Wishlist",
                 tabBarIcon: ({color, size, focused}) => <Ionicons name={focused ? "heart" : "heart-outline"} size={size} color={color} />
             }} />
-            <Tabs.Screen name="inbox" options={{
-                tabBarLabel: "Inbox",
-                tabBarIcon: ({color, size, focused}) => <MaterialCommunityIcons name={focused ? "message" : "message-outline"} size={size} color={color} />
-            }} />
             <Tabs.Screen name="profile" options={{
                 tabBarLabel: "Profile",
                 tabBarIcon: ({color, size , focused}) => <Ionicons name={focused ? "person-circle" : "person-circle-outline"} size={size} color={color} />

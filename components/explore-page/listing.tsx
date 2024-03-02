@@ -14,7 +14,7 @@ type ListingProps = {
 }
 
 const renderRow = ({item}: {item: Room, index: number}) => {
-    return (item.review_scores_rating / item.number_of_reviews <= 10 && !!item.medium_url) ? (
+    return (!!item.review_scores_rating && !!item.number_of_reviews && item.review_scores_rating / item.number_of_reviews <= 10 && !!item.medium_url) ? (
         <Link href={`/listing/${item.id}`} asChild>
             <Pressable>
                 <Animated.View style={styles.listing} entering={FadeInRight} exiting={FadeOutLeft} >
