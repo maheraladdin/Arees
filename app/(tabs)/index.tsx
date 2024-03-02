@@ -1,17 +1,14 @@
 import {View} from "react-native";
 import {Stack, useGlobalSearchParams} from "expo-router";
 import {ExploreHeader, Listing, ExploreMap} from "@/components/explore-page";
-import {useEffect, useMemo} from "react";
-import listing from "@/assets/data/airbnb-listings.json";
-import listingGeo from "@/assets/data/airbnb-listings.geo.json";
-import {Root} from "@/types/listing";
-import {Root as RootGeo} from "@/types/listingGeo";
+import {useEffect, useState} from "react";
+import {Room} from "@prisma/client";
 
 
 export default function ExplorePage() {
 
     const params = useGlobalSearchParams();
-    const items = useMemo(() => listing as Root[], []);
+    const [items, setItems] = useState<Room[] | null>(null);
 
     useEffect(() => {
         console.log(params.search);
@@ -19,6 +16,17 @@ export default function ExplorePage() {
 
     useEffect(() => {
         console.log(params.category);
+    }, [params.category]);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await fetch("/api/rooms")
+                setItems(await res.json());
+            } catch (e) {
+                console.error(e);
+            }
+        })()
     }, [params.category]);
 
     return (
@@ -29,8 +37,8 @@ export default function ExplorePage() {
             <Stack.Screen options={{
                 header: () => <ExploreHeader />,
             }} />
-            {/*<Listing items={items} category={params.category as string} />*/}
-            <ExploreMap listings={listingGeo as RootGeo} />
+            <Listing items={items} />
+            {/*<ExploreMap listings={listingGeo as RootGeo} />*/}
         </View>
     )
 }

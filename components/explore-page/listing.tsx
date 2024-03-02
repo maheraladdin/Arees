@@ -1,20 +1,19 @@
 import {View, Text, Pressable, StyleSheet} from "react-native";
-import {useEffect, useRef, useState} from "react";
+import {useRef} from "react";
 import {defaultStyles} from "@/constants/Styles";
 import {Link} from "expo-router";
 import {Image} from "expo-image";
-import {Root} from "@/types/listing";
 import {Ionicons} from "@expo/vector-icons";
 import Animated, {FadeInRight, FadeOutLeft} from "react-native-reanimated";
 import { FlashList } from "@shopify/flash-list";
+import {Room} from "@prisma/client";
 
 
 type ListingProps = {
-    items: Root[];
-    category: string;
+    items: Room[] | null;
 }
 
-const renderRow = ({item}: {item: Root, index: number}) => {
+const renderRow = ({item}: {item: Room, index: number}) => {
     return (item.review_scores_rating / item.number_of_reviews <= 10 && !!item.medium_url) ? (
         <Link href={`/listing/${item.id}`} asChild>
             <Pressable>
@@ -45,27 +44,15 @@ const renderRow = ({item}: {item: Root, index: number}) => {
     ) : null
 }
 
-export default function Listing({items, category}: ListingProps) {
-    // const [isLoading, setIsLoading] = useState(false);
+export default function Listing({items}: ListingProps) {
     const FlatListRef = useRef<FlashList<any> | null>(null);
-    const [data, setData] = useState<Root[]>(items);
-
-    useEffect(() => {
-        // setIsLoading(true);
-        setData([]);
-        setTimeout(() => {
-            setData(items);
-        }, 100);
-
-        // setIsLoading(false);
-    }, [category]);
 
     return (
         <View style={defaultStyles.container} >
             <FlashList
                 estimatedItemSize={399}
                 ref={FlatListRef}
-                data={data}
+                data={items}
                 renderItem={renderRow}
             />
         </View>
