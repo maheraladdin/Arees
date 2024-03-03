@@ -1,8 +1,9 @@
 import {View} from "react-native";
 import {Stack, useGlobalSearchParams} from "expo-router";
-import {ExploreHeader, Listing, ExploreMap} from "@/components/explore-page";
+import {ExploreHeader, ExploreMap} from "@/components/explore-page";
 import {useEffect, useState} from "react";
 import {Room} from "@prisma/client";
+import ExploreBottomSheet from "@/components/explore-page/explore-bottom-sheet";
 
 
 export default function ExplorePage() {
@@ -37,8 +38,8 @@ export default function ExplorePage() {
             <Stack.Screen options={{
                 header: () => <ExploreHeader />,
             }} />
-            <Listing items={items} />
-            {/*<ExploreMap listings={listingGeo as RootGeo} />*/}
+            <ExploreMap items={items} />
+            <ExploreBottomSheet items={items} />
         </View>
     )
 }

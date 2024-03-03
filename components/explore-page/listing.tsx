@@ -5,8 +5,8 @@ import {Link} from "expo-router";
 import {Image} from "expo-image";
 import {Ionicons} from "@expo/vector-icons";
 import Animated, {FadeInRight, FadeOutLeft} from "react-native-reanimated";
-import { FlashList } from "@shopify/flash-list";
 import {Room} from "@prisma/client";
+import {BottomSheetFlatList, BottomSheetFlatListMethods} from "@gorhom/bottom-sheet";
 
 
 type ListingProps = {
@@ -45,12 +45,11 @@ const renderRow = ({item}: {item: Room, index: number}) => {
 }
 
 export default function Listing({items}: ListingProps) {
-    const FlatListRef = useRef<FlashList<any> | null>(null);
+    const FlatListRef = useRef<BottomSheetFlatListMethods>(null);
 
     return (
         <View style={defaultStyles.container} >
-            <FlashList
-                estimatedItemSize={399}
+            <BottomSheetFlatList
                 ref={FlatListRef}
                 data={items}
                 renderItem={renderRow}
