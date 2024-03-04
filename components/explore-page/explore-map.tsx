@@ -3,11 +3,7 @@ import { defaultStyles } from '@/constants/Styles';
 import {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapView from "rs-react-native-map-clustering";
 import {useRouter} from 'expo-router';
-import { Root } from "@/types/listingGeo";
-
-type ExploreMapProps = {
-    listings: Root;
-}
+import {useItems} from "@/hooks/useItems";
 
 const INITIAL_REGION = {
     latitude: 52.5,
@@ -58,10 +54,12 @@ const renderCluster = (cluster: clusterProps) => {
     );
 };
 
-const ExploreMap = ({ listings }: ExploreMapProps) => {
+const ExploreMap = () => {
     const router = useRouter();
+    const items = useItems(state => state.items);
 
     const onMarkerPress = (id: string) => {
+        router.back();
         router.push(`/listing/${id}`);
     }
 
@@ -76,17 +74,17 @@ const ExploreMap = ({ listings }: ExploreMapProps) => {
                 renderCluster={renderCluster}
             >
                 {/* Render all our marker as usual */}
-                {listings.features.map((item) => (
+                {items?.map((item) => (
                         <Marker
                             coordinate={{
-                                latitude:  +item.properties.latitude,
-                                longitude:  +item.properties.longitude,
+                                latitude:  +item.latitude!,
+                                longitude:  +item.longitude!,
                             }}
-                            key={item.properties.id}
-                            onPress={onMarkerPress.bind(null, item.properties.id)}
+                            key={item.id}
+                            onPress={onMarkerPress.bind(null, item.id)}
                         >
                             <View style={styles.marker}>
-                                <Text style={styles.markerText}>€ {item.properties.price}</Text>
+                                <Text style={styles.markerText}>€ {item.price}</Text>
                             </View>
                         </Marker>
                 ))}

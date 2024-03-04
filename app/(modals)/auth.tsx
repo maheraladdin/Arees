@@ -1,4 +1,4 @@
-import {useOAuth} from "@clerk/clerk-expo";
+import {useOAuth, useUser} from "@clerk/clerk-expo";
 import {Ionicons} from "@expo/vector-icons";
 import * as WebBrowser from "expo-web-browser";
 import {View, Text, StyleSheet, Pressable, ScrollView} from "react-native";
@@ -7,7 +7,7 @@ import Colors from "@/constants/Colors";
 import {defaultStyles} from "@/constants/Styles";
 import {useWarmUpBrowser} from "@/hooks/useWarmUpBrowser";
 import {useRouter} from "expo-router";
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {SignIn, SignUp} from "@/components/auth-model";
 
 enum OAuthStrategies {
