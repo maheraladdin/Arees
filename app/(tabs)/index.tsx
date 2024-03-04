@@ -33,7 +33,6 @@ export default function ExplorePage() {
                     }
                 })
                 const data: RoomWithLove[] = await fetch(url).then(res => res.json());
-                console.log(JSON.stringify(data.at(2), null, 2))
                 setItems(data);
             } catch (e) {
                 console.error(e);

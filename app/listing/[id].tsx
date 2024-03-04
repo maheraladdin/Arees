@@ -30,7 +30,7 @@ export default function ListingIdPage() {
     const {user} = useUser();
     const {toggleLove, items} = useItems();
     const [heart, setHeart] = useState<boolean>(items.find(item => item.id === id)?.love || false);
-    const room = useMemo(() => items.find(item => item.id === id) as RoomWithLove, [items]);
+    const room = useMemo(() => items.find(item => item.id === id) as RoomWithLove, [items, id]);
     const navigation = useNavigation();
     const scrollRef = useAnimatedRef<Animated.ScrollView>();
 
