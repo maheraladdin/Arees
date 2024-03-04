@@ -1,19 +1,58 @@
 import {View, Text, Pressable, StyleSheet} from "react-native";
-import {useRef} from "react";
 import {defaultStyles} from "@/constants/Styles";
 import {Link} from "expo-router";
 import {Image} from "expo-image";
 import {Ionicons} from "@expo/vector-icons";
 import Animated, {FadeInRight, FadeOutLeft} from "react-native-reanimated";
+import { FlashList } from "@shopify/flash-list";
 import {Room} from "@prisma/client";
-import {BottomSheetFlatList, BottomSheetFlatListMethods} from "@gorhom/bottom-sheet";
+import {useUser} from "@clerk/clerk-expo";
+import {useEffect, useState} from "react";
+import {useItems} from "@/hooks/useItems";
 
-
-type ListingProps = {
-    items: Room[] | null;
+type RoomWithLove = Room & {
+    love: boolean;
 }
 
-const renderRow = ({item}: {item: Room, index: number}) => {
+type renderRowProps = {
+    item: RoomWithLove;
+}
+
+const RenderRow = ({item}: renderRowProps) => {
+
+    const {user} = useUser();
+    const {toggleLove, items} = useItems();
+
+    const [heart, setHeart] = useState<boolean>(item.love);
+
+    const onToggleWishlist = async (item: RoomWithLove) => {
+        if(!user) return;
+        // optimistic update
+        setHeart(prevState => !prevState);
+
+        // toggle wishlist
+        const res = await fetch("/api/wishlist", {
+            method: "PATCH",
+            body: JSON.stringify({
+                email: user.emailAddresses[0].emailAddress,
+                roomId: item.id,
+            })
+        });
+
+        // if the request fails, revert the optimistic update
+        if(res.status !== 200) {
+            setHeart(prevState => !prevState);
+            return;
+        }
+
+        // update the wishlist state
+        toggleLove(item.id);
+    }
+
+    useEffect(() => {
+        setHeart(item.love);
+    }, [items]);
+
     return (!!item.review_scores_rating && !!item.number_of_reviews && item.review_scores_rating / item.number_of_reviews <= 10 && !!item.medium_url) ? (
         <Link href={`/listing/${item.id}`} asChild>
             <Pressable>
@@ -22,8 +61,8 @@ const renderRow = ({item}: {item: Room, index: number}) => {
                         source={{uri: item.medium_url}}
                         style={styles.image}
                     />
-                    <Pressable style={styles.heartIcon}>
-                        <Ionicons name={"heart-outline"} size={24} color={"#f43f5e"}/>
+                    <Pressable onPress={() => onToggleWishlist(item)} style={styles.heartIcon}>
+                        <Ionicons name={heart ? "heart" : "heart-outline"} size={24} color={"#f43f5e"}/>
                     </Pressable>
                     <View style={{flexDirection: "row", justifyContent: "space-between"}}>
                         <Text numberOfLines={1} style={{fontFamily: "mon", width: 200}}>{item.name}</Text>
@@ -44,15 +83,15 @@ const renderRow = ({item}: {item: Room, index: number}) => {
     ) : null
 }
 
-export default function Listing({items}: ListingProps) {
-    const FlatListRef = useRef<BottomSheetFlatListMethods>(null);
-
+export default function Listing({items}: {items: RoomWithLove[] }) {
     return (
         <View style={defaultStyles.container} >
-            <BottomSheetFlatList
-                ref={FlatListRef}
+            <FlashList
+                estimatedItemSize={399}
                 data={items}
-                renderItem={renderRow}
+                renderItem={({item}) => {
+                    return <RenderRow item={item} key={item.id} />
+                }}
             />
         </View>
     )

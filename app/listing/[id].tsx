@@ -1,7 +1,7 @@
 import {Image} from "expo-image";
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import React, {useLayoutEffect, useState} from 'react';
+import React, {useLayoutEffect, useMemo, useState} from 'react';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import {View, Text, StyleSheet, Dimensions, Share, Pressable} from 'react-native';
 
@@ -15,34 +15,22 @@ import Animated, {
 
 import { defaultStyles } from '@/constants/Styles';
 import {Room} from "@prisma/client";
+import {useUser} from "@clerk/clerk-expo";
+import {useItems} from "@/hooks/useItems";
 
 const { width } = Dimensions.get('window');
 const IMG_HEIGHT = 300;
 
+type RoomWithLove = Room & {
+    love: boolean;
+}
+
 export default function ListingIdPage() {
     const { id } = useLocalSearchParams<{id: string}>();
-    const [room, setRoom] = useState<Room>({
-        id: '',
-        name: '',
-        description: '',
-        room_type: '',
-        price: 0,
-        number_of_reviews: 0,
-        review_scores_rating: 0,
-        xl_picture_url: '',
-        medium_url: '',
-        host_name: '',
-        host_picture_url: '',
-        host_since: '',
-        smart_location: '',
-        guests_included: 0,
-        bedrooms: 0,
-        beds: 0,
-        bathrooms: 0,
-        listing_url: '',
-        latitude: '',
-        longitude: '',
-    });
+    const {user} = useUser();
+    const {toggleLove, items} = useItems();
+    const [heart, setHeart] = useState<boolean>(items.find(item => item.id === id)?.love || false);
+    const room = useMemo(() => items.find(item => item.id === id) as RoomWithLove, [items]);
     const navigation = useNavigation();
     const scrollRef = useAnimatedRef<Animated.ScrollView>();
 
@@ -55,6 +43,30 @@ export default function ListingIdPage() {
         } catch (err) {
             console.log(err);
         }
+    }
+
+    const onToggleWishlist = async (item: RoomWithLove) => {
+        if(!user) return;
+        // optimistic update
+        setHeart(prevState => !prevState);
+
+        // toggle wishlist
+        const res = await fetch("/api/wishlist", {
+            method: "PATCH",
+            body: JSON.stringify({
+                email: user.emailAddresses[0].emailAddress,
+                roomId: item.id,
+            })
+        });
+
+        // if the request fails, revert the optimistic update
+        if(res.status !== 200) {
+            setHeart(prevState => !prevState);
+            return;
+        }
+
+        // update the wishlist state
+        toggleLove(item.id);
     }
 
     useLayoutEffect(() => {
@@ -70,8 +82,8 @@ export default function ListingIdPage() {
                     <Pressable style={styles.roundButton} onPress={shareListing}>
                         <Ionicons name="share-outline" size={22} color={'#000'} />
                     </Pressable>
-                    <Pressable style={styles.roundButton}>
-                        <Ionicons name="heart-outline" size={22} color={'#000'} />
+                    <Pressable onPress={() => onToggleWishlist(room)} style={styles.roundButton}>
+                        <Ionicons name={heart ? "heart" : "heart-outline"} size={22} color={"#f43f5e"} />
                     </Pressable>
                 </View>
             ),
@@ -81,14 +93,7 @@ export default function ListingIdPage() {
                 </Pressable>
             ),
         });
-    }, []);
-
-    useLayoutEffect(() => {
-        (async () => {
-            const res = await fetch(`/api/room/${id}`)
-            setRoom(await res.json())
-        })()
-    }, [id]);
+    }, [heart]);
 
     const scrollOffset = useScrollViewOffset(scrollRef);
 

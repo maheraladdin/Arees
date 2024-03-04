@@ -3,7 +3,7 @@ import { defaultStyles } from '@/constants/Styles';
 import {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapView from "rs-react-native-map-clustering";
 import {useRouter} from 'expo-router';
-import { Room } from '@prisma/client';
+import {useItems} from "@/hooks/useItems";
 
 const INITIAL_REGION = {
     latitude: 52.5,
@@ -54,14 +54,12 @@ const renderCluster = (cluster: clusterProps) => {
     );
 };
 
-type ExploreMapProps = {
-    items: Room[] | null;
-}
-
-const ExploreMap = ({ items }: ExploreMapProps) => {
+const ExploreMap = () => {
     const router = useRouter();
+    const items = useItems(state => state.items);
 
     const onMarkerPress = (id: string) => {
+        router.back();
         router.push(`/listing/${id}`);
     }
 

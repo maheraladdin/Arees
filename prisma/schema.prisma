@@ -13,13 +13,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum RoomType {
+  Private_room @map("Private room")
+  Entire_home  @map("Entire home/apt")
+  Shared_room  @map("Shared room")
+}
+
+model User {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  email     String     @unique
+  wishlists Wishlist[]
+}
+
+model Wishlist {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+  roomId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+  room   Room   @relation(fields: [roomId], references: [id])
+}
+
 model Room {
-  id                   String  @id @default(auto()) @map("_id") @db.ObjectId
+  id                   String     @id @default(auto()) @map("_id") @db.ObjectId
   name                 String?
   listing_url          String?
   xl_picture_url       String?
   medium_url           String?
-  room_type            String?
+  room_type            RoomType
   smart_location       String?
   guests_included      Int?
   bedrooms             Int?
@@ -34,4 +54,5 @@ model Room {
   price                Int?
   latitude             String?
   longitude            String?
+  Wishlist             Wishlist[]
 }

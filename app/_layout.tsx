@@ -4,7 +4,7 @@ import {Pressable} from "react-native";
 import {Stack, useRouter} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import {Ionicons} from "@expo/vector-icons";
-import {ClerkProvider, useAuth} from "@clerk/clerk-expo";
+import {ClerkProvider, useAuth, useUser} from "@clerk/clerk-expo";
 import * as SecureStore from "expo-secure-store";
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
@@ -39,7 +39,7 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
+    const [loaded, error] = useFonts({
     "mon": require("@/assets/fonts/Montserrat-Regular.ttf"),
     "mon-sb": require("@/assets/fonts/Montserrat-SemiBold.ttf"),
     "mon-b": require("@/assets/fonts/Montserrat-Bold.ttf"),
@@ -71,14 +71,27 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const router = useRouter();
-  const {isLoaded, isSignedIn} = useAuth();
+    const {user} = useUser();
+    const router = useRouter();
+    const {isLoaded, isSignedIn} = useAuth();
 
     useEffect(() => {
         if (isLoaded && !isSignedIn) {
             router.push("/auth");
         }
     }, [isLoaded]);
+
+    useEffect(() => {
+        !!user && (async () => await fetch("/api/user", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: user?.emailAddresses[0].emailAddress,
+            }),
+        }))();
+    }, [user?.emailAddresses]);
 
   return (
 
@@ -95,6 +108,17 @@ function RootLayoutNav() {
                   headerLeft: () => (<Pressable onPress={() => {router.back()}} ><Ionicons name={"close-outline"} size={28} /></Pressable>),
                 }}
             />
+              <Stack.Screen
+                  name="(modals)/map"
+                  options={{
+                      presentation: "modal",
+                      title: "Map",
+                      headerTitleStyle: {
+                          fontFamily: "mon-sb",
+                      },
+                      headerLeft: () => (<Pressable onPress={() => {router.back()}} ><Ionicons name={"close-outline"} size={28} /></Pressable>),
+                  }}
+              />
             <Stack.Screen
                 name="(modals)/booking"
                 options={{

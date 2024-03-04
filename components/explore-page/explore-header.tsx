@@ -10,11 +10,12 @@ import {
     Text,
 } from "react-native";
 import {Ionicons, MaterialIcons} from "@expo/vector-icons";
-import {useCallback, useEffect, useId, useRef, useState} from "react";
+import {useCallback ,useId, useRef, useState} from "react";
 import * as Haptics from "expo-haptics";
 
 import Colors from "@/constants/Colors";
-import {useGlobalSearchParams, useRouter} from "expo-router";
+import {useRouter} from "expo-router";
+import {RoomType} from "@prisma/client";
 
 type Category = {
     name: string;
@@ -23,32 +24,20 @@ type Category = {
 
 const categories: Category = [
     {
-        name: 'Tiny homes',
+        name: "all",
+        icon: "list",
+    },
+    {
+        name: RoomType.Private_room,
+        icon: 'single-bed',
+    },
+    {
+        name: RoomType.Shared_room,
+        icon: 'group',
+    },
+    {
+        name: RoomType.Entire_home,
         icon: 'home',
-    },
-    {
-        name: 'Cabins',
-        icon: 'house-siding',
-    },
-    {
-        name: 'Trending',
-        icon: 'local-fire-department',
-    },
-    {
-        name: 'Play',
-        icon: 'videogame-asset',
-    },
-    {
-        name: 'City',
-        icon: 'apartment',
-    },
-    {
-        name: 'Beachfront',
-        icon: 'beach-access',
-    },
-    {
-        name: 'Countryside',
-        icon: 'nature-people',
     }
 ];
 
@@ -58,12 +47,12 @@ export default function ExploreHeader() {
     const FlatListRef = useRef<FlatList | null>(null);
     const itemsRef = useRef<Array<View | null>>([]);
     const [search, setSearch] = useState<string>("");
-    const [categroyName, setCategoryName] = useState<string>("");
+    const [categoryName, setCategoryName] = useState<string>("all");
     const [activeIndex, setActiveIndex] = useState(0);
 
     const onSearch = useCallback((search: string) => {
-        router.setParams({search, category: categroyName});
-    },[router, categroyName]);
+        router.setParams({search, category: categoryName});
+    },[router, categoryName]);
 
     const setCategory = useCallback(async (index: number) => {
         setCategoryName(categories[index].name);
