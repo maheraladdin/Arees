@@ -11,11 +11,11 @@ export default function ExplorePage() {
     const [items, setItems] = useState<Room[] | null>(null);
 
     useEffect(() => {
-        console.log(params.search);
+        // console.log(params.search);
     }, [params.search]);
 
     useEffect(() => {
-        console.log(params.category);
+        // console.log(params.category);
     }, [params.category]);
 
     useEffect(() => {
