@@ -17,6 +17,7 @@ import { defaultStyles } from '@/constants/Styles';
 import {Room} from "@prisma/client";
 import {useUser} from "@clerk/clerk-expo";
 import {useItems} from "@/hooks/useItems";
+import {Reserve} from "@/components/reserve";
 
 const { width } = Dimensions.get('window');
 const IMG_HEIGHT = 300;
@@ -172,9 +173,7 @@ export default function ListingIdPage() {
                         <Text>night</Text>
                     </Pressable>
 
-                    <Pressable style={[defaultStyles.btn, { paddingRight: 20, paddingLeft: 20 }]}>
-                        <Text style={defaultStyles.btnText}>Reserve</Text>
-                    </Pressable>
+                    <Reserve item={room} />
                 </View>
             </Animated.View>
         </View>

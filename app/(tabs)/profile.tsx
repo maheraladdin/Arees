@@ -1,12 +1,11 @@
 import {
     View,
     Text,
-    Button,
     StyleSheet,
     SafeAreaView,
     Image,
     TouchableOpacity,
-    TextInput,
+    TextInput, ScrollView,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useAuth, useUser } from '@clerk/clerk-expo';
@@ -69,11 +68,11 @@ const Page = () => {
 
     return (
         <SafeAreaView style={defaultStyles.container}>
+            <ScrollView>
             <View style={styles.headerContainer}>
                 <Text style={styles.header}>Profile</Text>
                 <Ionicons name="notifications-outline" size={26} />
             </View>
-
             {user && (
                 <View style={styles.card}>
                     <TouchableOpacity onPress={onCaptureImage}>
@@ -115,12 +114,18 @@ const Page = () => {
                 </View>
             )}
 
-            {isSignedIn && <Button title="Log Out" onPress={() => signOut()} color={Colors.dark} />}
-            {!isSignedIn && (
+            {!isSignedIn ? (
                 <Link href={'/auth'} asChild>
-                    <Button title="Log In" color={Colors.dark} />
+                    <TouchableOpacity style={defaultStyles.btn}>
+                        <Text style={[defaultStyles.btnText]}>Log In</Text>
+                    </TouchableOpacity>
                 </Link>
+            ) : (
+                <TouchableOpacity onPress={() => signOut()} style={defaultStyles.btn}>
+                    <Text style={[defaultStyles.btnText]} >Log Out</Text>
+                </TouchableOpacity>
             )}
+            </ScrollView>
         </SafeAreaView>
     );
 };

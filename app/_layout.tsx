@@ -6,6 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import {Ionicons} from "@expo/vector-icons";
 import {ClerkProvider, useAuth, useUser} from "@clerk/clerk-expo";
 import * as SecureStore from "expo-secure-store";
+import {StripeProvider} from "@stripe/stripe-react-native";
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 const tokenCache = {
@@ -65,7 +66,11 @@ export default function RootLayout() {
           tokenCache={tokenCache}
           publishableKey={CLERK_PUBLISHABLE_KEY!}
       >
-        <RootLayoutNav />
+          <StripeProvider
+            publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
+          >
+            <RootLayoutNav />
+          </StripeProvider>
       </ClerkProvider>
   );
 }
