@@ -3,7 +3,7 @@ import {ExpoRequest, ExpoResponse} from "expo-router/server";
 
 export async function POST(req: ExpoRequest) {
 
-    const {email, price, currency, return_url} = await req.json();
+    const {email, price, currency} = await req.json();
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
         apiVersion: "2023-10-16",
