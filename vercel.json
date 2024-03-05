@@ -10,7 +10,7 @@
       }
     },
     {
-      "src": "api/index.js",
+      "src": "api/index.ts",
       "use": "@vercel/node",
       "config": {
         "includeFiles": ["dist/server/**"]
@@ -23,7 +23,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/api/index.js"
+      "dest": "/api/index.ts"
     }
   ]
 }
