@@ -6,7 +6,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import {Ionicons} from "@expo/vector-icons";
 import {ClerkProvider, useAuth, useUser} from "@clerk/clerk-expo";
 import * as SecureStore from "expo-secure-store";
-// import {StripeProvider} from "@stripe/stripe-react-native";
+import {StripeProvider} from "@stripe/stripe-react-native";
+import {SafeAreaProvider} from "react-native-safe-area-context"
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 const tokenCache = {
@@ -66,11 +67,13 @@ export default function RootLayout() {
           tokenCache={tokenCache}
           publishableKey={CLERK_PUBLISHABLE_KEY!}
       >
-          {/*<StripeProvider*/}
-          {/*  publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}*/}
-          {/*>*/}
-            <RootLayoutNav />
-          {/*</StripeProvider>*/}
+          <StripeProvider
+            publishableKey={process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY!}
+          >
+              <SafeAreaProvider>
+                    <RootLayoutNav />
+              </SafeAreaProvider>
+          </StripeProvider>
       </ClerkProvider>
   );
 }
@@ -99,50 +102,49 @@ function RootLayoutNav() {
     }, [user?.emailAddresses]);
 
   return (
-
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-                name="(modals)/auth"
-                options={{
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+            name="(modals)/auth"
+            options={{
+              presentation: "modal",
+              title: "Login",
+              headerTitleStyle: {
+              fontFamily: "mon-sb",
+              },
+              headerLeft: () => (<Pressable onPress={() => {router.back()}} ><Ionicons name={"close-outline"} size={28} /></Pressable>),
+            }}
+        />
+          <Stack.Screen
+              name="(modals)/map"
+              options={{
                   presentation: "modal",
-                  title: "Login",
+                  title: "Map",
                   headerTitleStyle: {
-                  fontFamily: "mon-sb",
+                      fontFamily: "mon-sb",
                   },
                   headerLeft: () => (<Pressable onPress={() => {router.back()}} ><Ionicons name={"close-outline"} size={28} /></Pressable>),
-                }}
-            />
-              <Stack.Screen
-                  name="(modals)/map"
-                  options={{
-                      presentation: "modal",
-                      title: "Map",
-                      headerTitleStyle: {
-                          fontFamily: "mon-sb",
-                      },
-                      headerLeft: () => (<Pressable onPress={() => {router.back()}} ><Ionicons name={"close-outline"} size={28} /></Pressable>),
-                  }}
-              />
-            <Stack.Screen
-                name="(modals)/booking"
-                options={{
-                  presentation: "transparentModal",
-                  animation: "fade",
-                  title: "Booking",
-                  headerTitleStyle: {
-                    fontFamily: "mon-sb",
-                  },
-                  headerLeft: () => (<Pressable onPress={() => {router.back()}} ><Ionicons name={"close-outline"} size={28} /></Pressable>),
-                }}
-            />
-            <Stack.Screen
-                name="listing/[id]"
-                options={{
-                    headerTitle: "",
-                    headerTransparent: true,
-                }}
-            />
-          </Stack>
+              }}
+          />
+        <Stack.Screen
+            name="(modals)/booking"
+            options={{
+              presentation: "transparentModal",
+              animation: "fade",
+              title: "Booking",
+              headerTitleStyle: {
+                fontFamily: "mon-sb",
+              },
+              headerLeft: () => (<Pressable onPress={() => {router.back()}} ><Ionicons name={"close-outline"} size={28} /></Pressable>),
+            }}
+        />
+        <Stack.Screen
+            name="listing/[id]"
+            options={{
+                headerTitle: "",
+                headerTransparent: true,
+            }}
+        />
+      </Stack>
   );
 }

@@ -1,7 +1,6 @@
 import {
     View,
     StyleSheet,
-    SafeAreaView,
     Pressable,
     TextInput,
     KeyboardAvoidingView,
@@ -12,6 +11,7 @@ import {
 import {Ionicons, MaterialIcons} from "@expo/vector-icons";
 import {useCallback ,useId, useRef, useState} from "react";
 import * as Haptics from "expo-haptics";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 import Colors from "@/constants/Colors";
 import {useRouter} from "expo-router";
@@ -65,9 +65,10 @@ export default function ExploreHeader() {
         router.setParams({category: categories[index].name, search});
     }, [router, search]);
 
+    const insets = useSafeAreaInsets();
 
     return (
-        <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+        <View style={{flex: 1, backgroundColor: 'white', paddingTop: insets.top}}>
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
@@ -99,12 +100,12 @@ export default function ExploreHeader() {
                                     size={24}
                                     color={activeIndex === index ? "#000" : Colors.grey}
                                 />
-                                <Text style={activeIndex === index ? styles.categoryTextActive : styles.categoryText}>{item.name}</Text>
+                                <Text style={activeIndex === index ? styles.categoryTextActive : styles.categoryText}>{item.name.split("_").join(" ")}</Text>
                             </Pressable>
                     )} />
                 </View>
             </KeyboardAvoidingView>
-        </SafeAreaView>
+        </View>
     )
 }
 

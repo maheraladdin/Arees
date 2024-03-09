@@ -83,8 +83,8 @@ const ExploreMap = () => {
                             key={item.id}
                             onPress={onMarkerPress.bind(null, item.id)}
                         >
-                            <View style={styles.marker}>
-                                <Text style={styles.markerText}>€ {item.price}</Text>
+                            <View style={[styles.marker, item.love && {backgroundColor: "#f43f5e"}]}>
+                                <Text style={[styles.markerText, item.love && {color: "#fff"}]}>€ {item.price}</Text>
                             </View>
                         </Marker>
                 ))}
