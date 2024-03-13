@@ -38,7 +38,7 @@ export default function ExplorePage() {
                 console.error(e);
             }
         })()
-    }, [params.category, params.search]);
+    }, [params.category, params.search, user?.emailAddresses]);
 
     return (
         <View style={{

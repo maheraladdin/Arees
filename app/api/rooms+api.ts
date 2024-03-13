@@ -70,10 +70,10 @@ export async function GET(request: ExpoRequest) {
     }
 
     let roomsWithLove: RoomWithLove[] = rooms.map(room => {
-        const isWishlisted = wishlist.some(wish => wish.roomId === room.id);
+        const isLoved = wishlist.some(wish => wish.roomId === room.id);
         return {
             ...room,
-            love: isWishlisted
+            love: isLoved
         }
     });
 
